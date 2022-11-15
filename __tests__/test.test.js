@@ -58,3 +58,38 @@ test("GET: 200 - Should return an array of articles sorted by date in descending
       expect(body.articles).toBeSorted({ key: "created_at", descending: true });
     });
 });
+describe("GET /api/articles/:article_id", () => {
+  test("status:200, responds with a single matching article", () => {
+    const article_id = 1;
+    return request(app)
+      .get(`/api/articles/${article_id}`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          article_id: 1,
+          author: "butter_bridge",
+          title: "Living in the shadow of a great man",
+          body: "I find this existence challenging",
+          topic: "mitch",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+        });
+      });
+  });
+});
+test("status:400, responds with an error message when passed a bad article ID", () => {
+  return request(app)
+    .get("/api/articles/notAnID")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
+    });
+});
+test("status:404, responds with an error message when passed an article that doesn't exist", () => {
+  return request(app)
+    .get("/api/articles/99")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No resource found");
+    });
+});
