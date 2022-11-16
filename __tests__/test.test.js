@@ -93,3 +93,43 @@ test("status:404, responds with an error message when passed an article that doe
       expect(body.msg).toBe("No resource found");
     });
 });
+describe("GET /api/articles/:article_id/comments", () => {
+  test("status:200, responds with an array of comments for the given article_id", () => {
+    return request(app)
+      .get(`/api/articles/1/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toHaveLength(11);
+        body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            article_id: 1,
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
+        });
+        expect(body.comments).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+      });
+  });
+});
+test("status:404, responds with an error message when passed an article that doesn't exist", () => {
+  return request(app)
+    .get("/api/articles/99/comments")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No resource found");
+    });
+});
+test("status:400, responds with an error message when passed a bad article ID", () => {
+  return request(app)
+    .get("/api/articles/notAnID/comments")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
+    });
+});
