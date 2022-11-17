@@ -117,7 +117,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
-test("status:400, responds with an error message when passed an article that doesn't exist", () => {
+test("status:404, responds with an error message when passed an article that doesn't exist", () => {
   return request(app)
     .get("/api/articles/99/comments")
     .expect(404)
@@ -163,6 +163,38 @@ test("status:400, responds with an error message when passed a comment without a
     })
     .expect(400)
     .then(({ body }) => {
-      expect(body.msg).toBe("Missing required fields");
+      expect(body.msg).toBe("Invalid input");
+    });
+});
+test("status:404, responds with an error message when passed a bad article ID", () => {
+  return request(app)
+    .post("/api/articles/1/comments")
+    .send({
+      username: "Anna",
+      body: "This is another body",
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No resource found");
+    });
+});
+test("status:404, responds with an error message when passed an article that doesn't exist", () => {
+  return request(app)
+    .post("/api/articles/99/comments")
+    .send({
+      username: "butter_bridge",
+      body: "This is another body",
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No resource found");
+    });
+});
+test("status:400, responds with an error message when passed a bad article ID", () => {
+  return request(app)
+    .post("/api/articles/notAnID/comments")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
     });
 });
