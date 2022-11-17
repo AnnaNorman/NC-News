@@ -117,7 +117,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
-test("status:404, responds with an error message when passed an article that doesn't exist", () => {
+test("status:400, responds with an error message when passed an article that doesn't exist", () => {
   return request(app)
     .get("/api/articles/99/comments")
     .expect(404)
@@ -131,5 +131,38 @@ test("status:400, responds with an error message when passed a bad article ID", 
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe("Invalid input");
+    });
+});
+describe("/api/articles/:article_id/comments", () => {
+  test("POST - 201: adds the new comment to the DB & responds with an object containing the new comment", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+        body: "Here is a body",
+      })
+      .expect(201)
+      .then((res) => {
+        expect(res.body.insertedComment).toMatchObject({
+          comment_id: 19,
+          body: "Here is a body",
+          article_id: 1,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+});
+test("status:400, responds with an error message when passed a comment without a body or a username", () => {
+  return request(app)
+    .post("/api/articles/1/comments")
+    .send({
+      username: undefined,
+      body: undefined,
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Missing required fields");
     });
 });

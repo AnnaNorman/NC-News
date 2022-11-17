@@ -1,4 +1,3 @@
-const { query } = require("../db/connection");
 const db = require("../db/connection");
 
 exports.fetchCommentsByArticleId = (article_id) => {
@@ -16,5 +15,21 @@ exports.fetchCommentsByArticleId = (article_id) => {
         });
       }
       return res.rows;
+    });
+};
+exports.insertComment = (article_id, content) => {
+  const { username, body } = content;
+  if (username === undefined || body === undefined) {
+    return Promise.reject({ status: 400, msg: "Missing required fields" });
+  }
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id)
+    VALUES ($1, $2, $3) 
+    RETURNING *;`,
+      [username, body, article_id]
+    )
+    .then((result) => {
+      return result.rows[0];
     });
 };
