@@ -133,3 +133,118 @@ test("status:400, responds with an error message when passed a bad article ID", 
       expect(body.msg).toBe("Invalid input");
     });
 });
+describe("/api/articles/:article_id/comments", () => {
+  test("POST - 201: adds the new comment to the DB & responds with an object containing the new comment", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+        body: "Here is a body",
+      })
+      .expect(201)
+      .then((res) => {
+        expect(res.body.comment).toMatchObject({
+          comment_id: 19,
+          body: "Here is a body",
+          article_id: 1,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+});
+test("status:400, responds with an error message when passed a comment without a body or a username", () => {
+  return request(app)
+    .post("/api/articles/1/comments")
+    .send({
+      username: undefined,
+      body: undefined,
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
+    });
+});
+test("status:404, responds with an error message when passed a bad username", () => {
+  return request(app)
+    .post("/api/articles/1/comments")
+    .send({
+      username: "Anna",
+      body: "This is another body",
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No resource found");
+    });
+});
+test("status:404, responds with an error message when passed an article that doesn't exist", () => {
+  return request(app)
+    .post("/api/articles/99/comments")
+    .send({
+      username: "butter_bridge",
+      body: "This is another body",
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No resource found");
+    });
+});
+test("status:400, responds with an error message when passed a bad article ID", () => {
+  return request(app)
+    .post("/api/articles/notAnID/comments")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
+    });
+});
+describe("PATCH /api/articles/1", () => {
+  it("status:200, responds with the updated article", () => {
+    const articleUpdates = {
+      inc_votes: "1",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(articleUpdates)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: 101,
+        });
+      });
+  });
+});
+test("status:400, responds with an error message when passed a bad article ID", () => {
+  return request(app)
+    .get("/api/articles/notAnID")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
+    });
+});
+test("status:404, responds with an error message when passed an article that doesn't exist", () => {
+  return request(app)
+    .get("/api/articles/99")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No resource found");
+    });
+});
+test("status:400, responds with an error message when passed a vote that isn't a number", () => {
+  const articleUpdates = {
+    inc_votes: "a",
+  };
+  return request(app)
+    .patch("/api/articles/1")
+    .send(articleUpdates)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
+    });
+});
