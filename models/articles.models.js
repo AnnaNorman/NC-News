@@ -31,3 +31,11 @@ exports.insertComment = (article_id, content) => {
       return result.rows[0];
     });
 };
+exports.updateArticleById = (body, article_id) => {
+  const { inc_votes } = body;
+  const query_values = [inc_votes, article_id];
+  const queryStr = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`;
+  return db.query(queryStr, query_values).then((result) => {
+    return result.rows[0];
+  });
+};
