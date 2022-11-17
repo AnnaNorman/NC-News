@@ -248,3 +248,13 @@ test("status:400, responds with an error message when passed a vote that isn't a
       expect(body.msg).toBe("Invalid input");
     });
 });
+test("status:400, responds with an error message when passed a vote that isn't a number", () => {
+  const articleUpdates = {};
+  return request(app)
+    .patch("/api/articles/1")
+    .send(articleUpdates)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid input");
+    });
+});
