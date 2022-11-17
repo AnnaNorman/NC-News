@@ -248,7 +248,7 @@ test("status:400, responds with an error message when passed a vote that isn't a
       expect(body.msg).toBe("Invalid input");
     });
 });
-test("status:400, responds with an error message when passed a vote that isn't a number", () => {
+test("status:400, responds with an error message when inc vote is missing", () => {
   const articleUpdates = {};
   return request(app)
     .patch("/api/articles/1")
@@ -256,5 +256,30 @@ test("status:400, responds with an error message when passed a vote that isn't a
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe("Invalid input");
+    });
+});
+describe("GET/api/users", () => {
+  test("Should return an array of user objects with each object having the properties user_name, name, avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toHaveLength(4);
+        body.users.forEach((item) => {
+          expect(item).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+test("GET - 404: Path not found", () => {
+  return request(app)
+    .get("/api/user")
+    .expect(404)
+    .then((res) => {
+      expect(res.body.msg).toBe("Path not found!");
     });
 });
