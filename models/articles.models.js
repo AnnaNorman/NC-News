@@ -19,29 +19,15 @@ exports.fetchCommentsByArticleId = (article_id) => {
 };
 exports.insertComment = (article_id, content) => {
   const { username, body } = content;
-  if (username === undefined || body === undefined) {
-    return Promise.reject({ status: 400, msg: "Invalid input" });
-  } else {
-    return db
-      .query(`SELECT * FROM comments WHERE article_id = $1`, [article_id])
-      .then((result) => {
-        if (result.rows.length === 0) {
-          return Promise.reject({
-            status: 404,
-            msg: "No resource found",
-          });
-        } else {
-          return db
-            .query(
-              `INSERT INTO comments (author, body, article_id)
+
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id)
     VALUES ($1, $2, $3) 
     RETURNING *;`,
-              [username, body, article_id]
-            )
-            .then((result) => {
-              return result.rows[0];
-            });
-        }
-      });
-  }
+      [username, body, article_id]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
 };
