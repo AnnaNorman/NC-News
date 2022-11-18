@@ -155,6 +155,16 @@ describe("GET/api/articles", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No resource found");
+        zs;
+      });
+  });
+
+  test("GET: 400 - returns invalid sort query when sort_by query column does not exist", () => {
+    return request(app)
+      .get("/api/articles?sort_by=dog")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid sort query");
       });
   });
 });

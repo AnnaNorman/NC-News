@@ -37,7 +37,7 @@ exports.selectArticles = (
     queryValues.push(topic);
   }
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${userOrder}`;
-
+  Î;
   return db.query(queryStr, queryValues).then((result) => {
     if (result.rows.length === 0) {
       return Promise.reject({
@@ -56,7 +56,6 @@ exports.selectArticleById = (article_id) => {
       [article_id]
     )
     .then((result) => {
-      console.log(result);
       if (result.rows.length === 0) {
         return Promise.reject({
           status: 404,
