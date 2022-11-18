@@ -15,12 +15,13 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  selectArticles(sort_by, order)
+  const { sort_by, order, topic } = req.query;
+  selectArticles(sort_by, order, topic)
     .then((result) => {
       res.status(200).send({ articles: result });
     })
     .catch((err) => {
+      console.log(err);
       next(err);
     });
 };
