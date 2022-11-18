@@ -39,7 +39,7 @@ app.use((err, req, res, next) => {
   }
 });
 app.use((err, req, res, next) => {
-  if (err.code === "23503") {
+  if (err.code === "23503" || err.code === "42P01") {
     res.status(404).send({ msg: "No resource found" });
   } else {
     next(err);

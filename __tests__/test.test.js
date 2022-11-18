@@ -35,29 +35,140 @@ test("GET - 404: Path not found", () => {
       expect(res.body.msg).toBe("Path not found!");
     });
 });
+describe("GET/api/articles", () => {
+  test("GET: 200 - Should return an array of articles sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
 
-test("GET: 200 - Should return an array of articles sorted by date in descending order", () => {
-  return request(app)
-    .get("/api/articles")
-
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles).toBeInstanceOf(Array);
-      expect(body.articles).toHaveLength(12);
-      body.articles.forEach((item) => {
-        expect(item).toMatchObject({
-          author: expect.any(String),
-          title: expect.any(String),
-          article_id: expect.any(Number),
-          topic: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-          comment_count: expect.any(Number),
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles).toHaveLength(12);
+        body.articles.forEach((item) => {
+          expect(item).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+        expect(body.articles).toBeSorted({
+          key: "created_at",
+          descending: true,
         });
       });
-      expect(body.articles).toBeSorted({ key: "created_at", descending: true });
-    });
+  });
+  test("10: GET: 200 - can sort an array of articles by specified topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach((item) => {
+          expect(item.topic).toBe("mitch");
+        });
+      });
+  });
+
+  test("GET: 200 - an array of articles sorted by date by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("GET: 200 - can sort array of articles by title", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+
+  test("GET: 200 - can sort array of articles by topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("topic", { descending: true });
+      });
+  });
+  test("GET: 200 - can sort array of articles by author", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  test("GET: 200 - can sort array of articles by body", () => {
+    return request(app)
+      .get("/api/articles?sort_by=body")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("body", { descending: true });
+      });
+  });
+  test("GET: 200 - can sort array of articles by created_at", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET: 200 - can sort array of articles by votes", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+
+  test("GET: 200 - allow client to change the sort order with an order query", () => {
+    return request(app)
+      .get("/api/articles?order=asc&sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSorted({ key: "votes", ascending: true });
+      });
+  });
+
+  test("GET: 400 - reject order query when passed invalid term  ", () => {
+    return request(app)
+      .get("/api/articles?order=dog")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid sort query");
+      });
+  });
+
+  test("GET: 404 - returns no resource found when query value does not exist in column ", () => {
+    return request(app)
+      .get("/api/articles?topic=dog")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No resource found");
+        zs;
+      });
+  });
+
+  test("GET: 400 - returns invalid sort query when sort_by query column does not exist", () => {
+    return request(app)
+      .get("/api/articles?sort_by=dog")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid sort query");
+      });
+  });
 });
+
 describe("GET /api/articles/:article_id", () => {
   test("status:200, responds with a single matching article", () => {
     const article_id = 1;
