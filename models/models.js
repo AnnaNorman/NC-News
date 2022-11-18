@@ -37,7 +37,6 @@ exports.selectArticles = (
     queryValues.push(topic);
   }
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${userOrder}`;
-  Î;
   return db.query(queryStr, queryValues).then((result) => {
     if (result.rows.length === 0) {
       return Promise.reject({
