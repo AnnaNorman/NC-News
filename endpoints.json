@@ -23,5 +23,71 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves a single article",
+    "exampleResponse": {
+      "article": {
+        "title": "Running a Node App",
+        "topic": "JavaScript",
+        "author": "circleOfTrust",
+        "body": "Some text from the article",
+        "comment_count": 4,
+        "created_at": 1527695953341
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "returns an array of comments for one article id",
+    "exampleResponse": {
+      "article": {
+        "article_id": 6,
+        "comment_id": 3,
+        "author": "circleOfTrust",
+        "body": "Some text from the comment",
+        "created_at": 1527695953341,
+        "votes": 6
+      }
+    }
+  },
+  "GET /api/users": {
+    "description": "returns an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "deadpool",
+          "name": "wade",
+          "author": "circleOfTrust",
+          "avatar_url": "A link to an image"
+        }
+      ]
+    }
+  },
+
+  "PATCH /api/articles/:article_id": {
+    "description": "accepts a vote_inc property in body and returns an article object with vote property updated",
+    "exampleResponse": {
+      "article": {
+        "title": "Running a Node App",
+        "topic": "JavaScript",
+        "author": "circleOfTrust",
+        "body": "Some text from the article",
+        "comment_count": 4,
+        "created_at": 1527695953341
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "accepts username and comment in body and returns a new comment object",
+    "exampleResponse": {
+      "comment": {
+        "article_id": 6,
+        "comment_id": 3,
+        "author": "circleOfTrust",
+        "body": "Some text from the comment",
+        "votes": 0,
+        "created_at": 1527695953341
+      }
+    }
   }
 }

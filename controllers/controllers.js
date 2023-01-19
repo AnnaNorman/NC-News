@@ -21,7 +21,6 @@ exports.getArticles = (req, res, next) => {
       res.status(200).send({ articles: result });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
