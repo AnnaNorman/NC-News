@@ -12,6 +12,7 @@ topics
 This API is hosted on Cyclic and uses ElephantSQL to host the database.
 
 INITIAL SET UP
+
 Please ensure you have node v19.1.0 and PSQL v 14.5 installed as the minimum required versions for this repository.
 
 In order to use this repository, please follow the steps below:
